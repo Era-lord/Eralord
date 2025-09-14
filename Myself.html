@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eralord | 石 岱</title>
+    <!-- 引入字体图标 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Jura字体 -->
+    <link href="http://fonts.googleapis.com/css?family=Jura:200,300,400,500,600,700,800,900" rel="stylesheet">
+    <style>
+        *{
+            /* 初始化 */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            /* 100%窗口高度 */
+            min-height: 100vh;
+            /* 深灰色背景 */
+            background-color: #121212;
+            color: #e0e6eb;
+            font-family: 'Jura';
+            font-weight: 300;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* 背景装饰元素 */
+        .bg-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        .decoration-line {
+            position: absolute;
+            background: rgba(41, 98, 255, 0.1);
+        }
+        
+        .line-1 {
+            width: 100%;
+            height: 1px;
+            top: 30%;
+            box-shadow: 0 0 10px rgba(41, 98, 255, 0.3);
+        }
+        
+        .line-2 {
+            width: 1px;
+            height: 100%;
+            left: 20%;
+            box-shadow: 0 0 10px rgba(41, 98, 255, 0.3);
+        }
+        
+        .line-3 {
+            width: 1px;
+            height: 100%;
+            right: 20%;
+            box-shadow: 0 0 10px rgba(41, 98, 255, 0.3);
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(41, 98, 255, 0.2);
+        }
+        
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: -150px;
+        }
+        
+        .circle-2 {
+            width: 500px;
+            height: 500px;
+            bottom: -250px;
+            left: -250px;
+        }
+        
+        /* 动态粒子背景 */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        
+        /* 标题样式 - 基于205.css */
+        .title-container{
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 42px;
+            text-transform: uppercase;
+            font-weight: bolder;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .title-container::before{
+            content: 'Eralord | 石 岱';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #2962ff;
+            width: 60px;
+            /* 文本不换行 */
+            white-space: nowrap;
+            /* 溢出隐藏 */
+            overflow: hidden;
+            border-right: 4px solid #2962ff;
+            /* 执行涂抹动画：动画名 时长 线性 无限播放 */
+            animation: move 5s linear infinite;
+            /* 加个发光效果 */
+            filter: drop-shadow(0 0 20px #2962ff);
+        }
+
+        /* 定义动画 */
+        @keyframes move {
+            0%{
+                width: 0;
+            }
+            100%{
+                width: 100%;
+            }
+        }
+        
+        /* 时钟样式 - 基于132.css */
+        .clock-container {
+            position: absolute;
+            top: 45%;
+            right: 20%;
+            z-index: 10;
+        }
+        
+        .column,
+        .colon{
+            /* 行内块元素 */
+            display: inline-block;
+            font-size: 40px;
+            line-height: 40px;
+            /* 顶部对齐 */
+            vertical-align: top;
+        }
+        .column{
+            /* 设置过渡 */
+            transition: 0.3s;
+        }
+        /* 冒号 */
+        .colon{
+            /* 过渡 */
+            transition: 0.3s;
+        }
+        .colon::after{
+            content: ":";
+        }
+        /* 数字默认样式 */
+        .num{
+            opacity: 0.25;
+            transition: 0.5s;
+        }
+        /* 当前时间（正中间数字） */
+        .num.visible{
+            opacity: 1;
+            text-shadow: 1px 1px 0 #2962ff;
+        }
+        /* 邻近的 */
+        .num.near{
+            opacity: 0.35;
+        }
+        /* 远的 */
+        .num.far{
+            opacity: 0.15;
+        }
+        /* 更远的（越远越透明） */
+        .num.distant{
+            opacity: 0.1;
+        }
+        
+        /* 按钮样式 */
+        .buttons-container {
+            position: absolute;
+            top: 40%; /* 向下移动了5% */
+            left: 41%;
+            display: flex;
+            flex-direction: column;
+            gap: 50px; /* 增加按钮间距 */
+            z-index: 10;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            background: transparent;
+            border: 2px solid #2962ff;
+            color: #e0e6eb;
+            font-family: 'Jura';
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            background: rgba(41, 98, 255, 0.1);
+            box-shadow: 0 0 15px rgba(41, 98, 255, 0.5);
+        }
+        
+        /* 内容区域样式 */
+        .content-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px; /* 增加宽度以容纳更多图片 */
+            padding: 30px;
+            background: rgba(18, 18, 18, 0.95);
+            border: 1px solid #2962ff;
+            box-shadow: 0 0 30px rgba(41, 98, 255, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-container.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .content-container h2 {
+            color: #2962ff;
+            margin-bottom: 20px;
+            font-size: 28px;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+        
+        .content-body {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .content-text {
+            flex: 1;
+        }
+        
+        .content-images {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .content-image {
+            width: 320px;
+            height: 320px;
+            border: 1px solid #2962ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(41, 98, 255, 0.05);
+            overflow: hidden;
+        }
+        
+        .content-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        
+        .content-image-placeholder {
+            color: #2962ff;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .content-container p {
+            line-height: 1.8;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #2962ff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* 纸飞机样式 */
+        #plane{
+            color: #2962ff;
+            font-size: 40px;
+            /* 绝对定位 */
+            position: absolute;
+            /* 弹性布局 水平+垂直居中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 背景装饰 -->
+    <div class="bg-decoration">
+        <div class="decoration-line line-1"></div>
+        <div class="decoration-line line-2"></div>
+        <div class="decoration-line line-3"></div>
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+    </div>
+    
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+    
+    <!-- 标题 -->
+    <div class="title-container">
+        Eralord | 石 岱
+    </div>
+    
+    <!-- 时钟 -->
+    <div class="clock-container">
+        <div class="column">
+            <div class="num">0</div>
+            <div class="num">1</div>
+            <div class="num">2</div>
+        </div>
+        <div class="column">
+            <div class="num">0</div>
+            <div class="num">1</div>
+            <div class="num">2</div>
+            <div class="num">3</div>
+            <div class="num">4</div>
+            <div class="num">5</div>
+            <div class="num">6</div>
+            <div class="num">7</div>
+            <div class="num">8</div>
+            <div class="num">9</div>
+        </div>
+        <div class="colon"></div>
+        <div class="column">
+            <div class="num">0</div>
+            <div class="num">1</div>
+            <div class="num">2</div>
+            <div class="num">3</div>
+            <div class="num">4</div>
+            <div class="num">5</div>
+        </div>
+        <div class="column">
+            <div class="num">0</div>
+            <div class="num">1</div>
+            <div class="num">2</div>
+            <div class="num">3</div>
+            <div class="num">4</div>
+            <div class="num">5</div>
+            <div class="num">6</div>
+            <div class="num">7</div>
+            <div class="num">8</div>
+            <div class="num">9</div>
+        </div>
+        <div class="colon"></div>
+        <div class="column">
+            <div class="num">0</div>
+            <div class="num">1</div>
+            <div class="num">2</div>
+            <div class="num">3</div>
+            <div class="num">4</div>
+            <div class="num">5</div>
+        </div>
+        <div class="column">
+            <div class="num">0</div>
+            <div class="num">1</div>
+            <div class="num">2</div>
+            <div class="num">3</div>
+            <div class="num">4</div>
+            <div class="num">5</div>
+            <div class="num">6</div>
+            <div class="num">7</div>
+            <div class="num">8</div>
+            <div class="num">9</div>
+        </div>
+    </div>
+    
+    <!-- 按钮 -->
+    <div class="buttons-container">
+        <button class="btn" id="about-btn">About Me</button>
+        <button class="btn" id="skills-btn">Life And Intersections</button>
+        <button class="btn" id="projects-btn">Creation And Practice</button>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content-container" id="about-content">
+        <button class="close-btn">&times;</button>
+        <h2>About Me</h2>
+        <div class="content-body">
+            <div class="content-text">
+                <p>各位早安，午安或晚安，我是石 岱(Eralord)，目前是一个杭州电子科技大学电子信息专业的在校本科生。</p>
+                <p>以理性为罗盘，以兴趣为风帆，世界运转必有其内在的逻辑与美感，而我愿做那个探索者。</p>
+                <p>沉着冷静，习惯于理性思考，待人接物更愿意表现出真诚的一面。</p>
+                <p>我真心热爱由人类所创造的一切，喜爱那些形形色色又让人叹为观止的东西，无论是艺术还是技术。</p>
+		<p>在如今这个被迫内卷而又仇视内卷的社会，我始终认为人不应被优绩主义裹挟。</p>
+		<p>于我而言，大学更像是一个平台，而非是一个过程，读大学的目的仅就是为了读大学，假设这个社会允许高中毕业就能找到不错的工作，我依然会选择来读一次大学，当然这只是我个人的观点。</p>
+            </div>
+            <div class="content-images">
+                <div class="content-image" id="about-image-1">
+                    <div class="content-image-placeholder">
+                        图片位置<br>
+                        (同目录下的 1.png)
+                    </div>
+                </div>
+             </div>
+        </div>
+    </div>
+    
+    <div class="content-container" id="skills-content">
+        <button class="close-btn">&times;</button>
+        <h2>Life And Intersections</h2>
+        <div class="content-body">
+            <div class="content-text">
+                <p>学习与创造之外，我的生活同样丰富多彩。我是羽毛球爱好者，从初中开始，一直持续到现在，不过我仅仅是喜爱这项运动，所以不会懂很多专业知识或是买很贵的拍哦~</p>
+                <p>作为男生，喜欢打游戏是也是人生一大乐趣，我从不认为游戏是什么洪水猛兽，它仅是一个载体，顺应了一些当代的需求，而我尤为喜欢单机游戏，偏爱那些震撼人心的故事。</p>
+                <p>与人交往方面，我真的很希望能和我遇到的每一个人都轻松愉快，同时又会注意必要的边界感，我不是什么大男子主义，也不喜欢说教，我从不在难受的人际关系中死磕，所以也不希望有人在与我的相处中受伤。</p>
+                <p>如果要问生活中我最多喜欢做什么，大抵是去学习，研究或拓展那些更多的可能性吧，它不需要多有用，但足够使我快乐</p>
+            </div>
+            <div class="content-images">
+                <div class="content-image" id="skills-image-1">
+                    <div class="content-image-placeholder">
+                        图片位置<br>
+                        (同目录下的 3.png)
+                    </div>
+                </div>
+                <div class="content-image" id="skills-image-2">
+                    <div class="content-image-placeholder">
+                        图片位置<br>
+                        (同目录下的 4.png)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-container" id="projects-content">
+        <button class="close-btn">&times;</button>
+        <h2>Creation And Practice</h2>
+        <div class="content-body">
+            <div class="content-text">
+                <p>如果说提到我个人的一些能力的话：</p>
+                <p>我会一点点简单的前端（HTML,CSS,JS）</p>
+                <p>会写游戏，不过目前都是一些小项目，并没有可以拿得出手的成品。</p>
+                <p>对于视觉设计，比如PPT的排版和色彩搭配有一些个人浅浅的研究，也尝试过视频剪辑和自媒体的创作~</p>
+            </div>
+            <div class="content-images">
+                <div class="content-image" id="projects-image-1">
+                    <div class="content-image-placeholder">
+                        图片位置<br>
+                        (同目录下的 5.png)
+                    </div>
+                </div>
+                <div class="content-image" id="projects-image-2">
+                    <div class="content-image-placeholder">
+                        图片位置<br>
+                        (同目录下的 6.png)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 纸飞机 -->
+    <div id="plane">
+        <i class="fa fa-paper-plane" aria-hidden="true"></i>
+    </div>
+
+    <!-- 引入粒子库 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // 初始化粒子背景
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#2962ff" },
+                shape: {
+                    type: "circle",
+                    stroke: { width: 0, color: "#000000" },
+                    polygon: { nb_sides: 5 }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#2962ff",
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                    attract: { enable: false, rotateX: 600, rotateY: 1200 }
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "grab" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 140, line_linked: { opacity: 1 } },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // 时钟效果 - 基于132.js
+        let size = 40;
+        let columns = Array.from(document.getElementsByClassName('column'));
+        let class_list = ['visible', 'near', 'far', 'far', 'distant', 'distant'];
+        let is_24_hour_clock = true;
+
+        function getClock() {
+            let d = new Date();
+            let hour = is_24_hour_clock ? d.getHours() : d.getHours() % 12 || 12;
+            hour = hour < 10 ? '0' + hour : hour;
+            let minute = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+            let second = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+            return hour + '' + minute + '' + second;
+        }
+
+        function getClass(n, i) {
+            return class_list.find((_class, _i) => n - _i === i || n + _i === i) || '';
+        }
+
+        let clock = getClock().split('');
+        columns.forEach((ele, _i) => {
+            let n = +clock[_i];
+            let offset = -n * size;
+            ele.style.transform = `translateY(${offset}px)`;
+            Array.from(ele.children).forEach((e, i) => {
+                e.className = 'num ' + getClass(n, i);
+            });
+        });
+
+        setInterval(() => {
+            clock = getClock().split('');
+            columns.forEach((ele, _i) => {
+                let n = +clock[_i];
+                let offset = -n * size;
+                ele.style.transform = `translateY(${offset}px)`;
+                Array.from(ele.children).forEach((e, i) => {
+                    e.className = 'num ' + getClass(n, i);
+                });
+            });
+        }, 1000);
+
+        // 按钮和内容区域交互
+        const aboutBtn = document.getElementById('about-btn');
+        const skillsBtn = document.getElementById('skills-btn');
+        const projectsBtn = document.getElementById('projects-btn');
+        const aboutContent = document.getElementById('about-content');
+        const skillsContent = document.getElementById('skills-content');
+        const projectsContent = document.getElementById('projects-content');
+        const closeBtns = document.querySelectorAll('.close-btn');
+
+        aboutBtn.addEventListener('click', () => {
+            aboutContent.classList.add('visible');
+            skillsContent.classList.remove('visible');
+            projectsContent.classList.remove('visible');
+        });
+
+        skillsBtn.addEventListener('click', () => {
+            skillsContent.classList.add('visible');
+            aboutContent.classList.remove('visible');
+            projectsContent.classList.remove('visible');
+        });
+        
+        projectsBtn.addEventListener('click', () => {
+            projectsContent.classList.add('visible');
+            aboutContent.classList.remove('visible');
+            skillsContent.classList.remove('visible');
+        });
+
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                aboutContent.classList.remove('visible');
+                skillsContent.classList.remove('visible');
+                projectsContent.classList.remove('visible');
+            });
+        });
+
+        // 点击内容区域外部关闭
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.content-container') && 
+                !e.target.closest('.btn') && 
+                !e.target.closest('#plane')) {
+                aboutContent.classList.remove('visible');
+                skillsContent.classList.remove('visible');
+                projectsContent.classList.remove('visible');
+            }
+        });
+
+        // 加载图片
+        function loadImages() {
+            // 尝试加载图片
+            for (let i = 1; i <= 6; i++) {
+                const img = new Image();
+                img.src = `${i}.png`;
+                img.onload = function() {
+                    let container;
+                    if (i <= 2) {
+                        container = document.getElementById(`about-image-${i}`);
+                    } else if (i <= 4) {
+                        container = document.getElementById(`skills-image-${i-2}`);
+                    } else {
+                        container = document.getElementById(`projects-image-${i-4}`);
+                    }
+                    
+                    if (container) {
+                        container.innerHTML = '';
+                        container.appendChild(img.cloneNode());
+                    }
+                };
+                img.onerror = function() {
+                    console.log(`图片 ${i}.png 加载失败`);
+                };
+            }
+        }
+
+        // 页面加载完成后尝试加载图片
+        window.addEventListener('load', loadImages);
+
+        // 纸飞机跟随鼠标效果 - 基于80.html
+        let plane = document.getElementById('plane');
+        let deg = 0, ex = 0, ey = 0, vx = 0, vy = 0, count = 0;
+        
+        // 初始位置设为屏幕中央
+        plane.style.left = (window.innerWidth / 2 - 15) + 'px';
+        plane.style.top = (window.innerHeight / 2 - 15) + 'px';
+        vx = window.innerWidth / 2 - 15;
+        vy = window.innerHeight / 2 - 15;
+        
+        window.addEventListener('mousemove', (e) => {
+            ex = e.x - plane.offsetLeft - plane.clientWidth / 2;
+            ey = e.y - plane.offsetTop - plane.clientHeight / 2;
+            deg = 360 * Math.atan(ey / ex) / (2 * Math.PI) + 45;
+            if(ex < 0){
+                deg += 180;
+            }
+            count = 0;
+        })
+        
+        function draw(){
+            plane.style.transform = 'rotate(' + deg + 'deg)';
+            if(count < 100){
+                vx += ex / 100;
+                vy += ey / 100;
+            }
+            plane.style.left = vx + 'px';
+            plane.style.top = vy + 'px';
+            count++;
+        }
+        setInterval(draw, 1);
+    </script>
+</body>
+</html>
